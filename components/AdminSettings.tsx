@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
-import { Save } from 'lucide-react';
+import { Save, Upload, Image as ImageIcon } from 'lucide-react';
 
 const AdminSettings: React.FC = () => {
     const [tagline, setTagline] = useState('');
@@ -12,8 +12,10 @@ const AdminSettings: React.FC = () => {
     const [closingTime, setClosingTime] = useState('');
     const [weekendOpeningTime, setWeekendOpeningTime] = useState('');
     const [weekendClosingTime, setWeekendClosingTime] = useState('');
+    const [logoUrl, setLogoUrl] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -28,6 +30,7 @@ const AdminSettings: React.FC = () => {
                     setClosingTime(doc.data().closingTime || '10:30 PM');
                     setWeekendOpeningTime(doc.data().weekendOpeningTime || '11:00 AM');
                     setWeekendClosingTime(doc.data().weekendClosingTime || '11:00 PM');
+                    setLogoUrl(doc.data().logoUrl || 'https://www.farmersmeenchatti.in/img/logo-sm.jpg');
                 } else {
                     // Initialize default if not exists
                     setTagline("കടലിന്റെ രുചി. \nകളിമണ്ണിന്റെ മണം.");
@@ -40,6 +43,31 @@ const AdminSettings: React.FC = () => {
         fetchSettings();
     }, []);
 
+    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Check file size (Firestore limit is 1MB, let's keep logo under 500KB)
+        if (file.size > 500 * 1024) {
+            alert("File is too large! Please upload a logo smaller than 500KB.");
+            return;
+        }
+
+        setUploading(true);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setLogoUrl(reader.result as string);
+            setUploading(false);
+            alert('Logo converted to Base64! Don\'t forget to save settings.');
+        };
+        reader.onerror = () => {
+            console.error("Error reading file");
+            alert("Failed to read file.");
+            setUploading(false);
+        };
+        reader.readAsDataURL(file);
+    };
+
     const handleSave = async () => {
         setSaving(true);
         try {
@@ -51,7 +79,8 @@ const AdminSettings: React.FC = () => {
                 openingTime,
                 closingTime,
                 weekendOpeningTime,
-                weekendClosingTime
+                weekendClosingTime,
+                logoUrl
             }, { merge: true });
             alert('Settings saved!');
         } catch (error) {
@@ -70,6 +99,32 @@ const AdminSettings: React.FC = () => {
 
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 max-w-2xl">
                 <div className="space-y-6">
+                    <div className="space-y-4 pb-6 border-b border-slate-100">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Brand Logo</label>
+                        <div className="flex items-center gap-6">
+                            <div className="w-24 h-24 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative group">
+                                {logoUrl ? (
+                                    <img src={logoUrl} alt="Logo Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <ImageIcon className="text-slate-300" size={32} />
+                                )}
+                                {uploading && (
+                                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                                        <div className="w-6 h-6 border-2 border-sky-600 border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex-1 space-y-2">
+                                <label className="inline-flex items-center gap-2 bg-sky-50 text-sky-700 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-sky-100 transition-all border border-sky-200">
+                                    <Upload size={16} />
+                                    {uploading ? 'Uploading...' : 'Upload New Logo'}
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleLogoUpload} disabled={uploading} />
+                                </label>
+                                <p className="text-xs text-slate-400">Recommended: Square image, minimum 200x200px. PNG or JPG.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="space-y-2">
                         <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Main Tagline (Malayalam/English)</label>
                         <textarea
@@ -196,7 +251,7 @@ const AdminSettings: React.FC = () => {
                     🌱 Seed Database
                 </button>
             </div>
-        </div>
+        </div >
     );
 };
 

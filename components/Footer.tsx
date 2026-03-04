@@ -1,7 +1,20 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { db } from '../firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 const Footer: React.FC = () => {
+  const [logoUrl, setLogoUrl] = useState('https://www.farmersmeenchatti.in/img/logo-sm.jpg');
+
+  useEffect(() => {
+    const docRef = doc(db, 'settings', 'general');
+    const unsubscribe = onSnapshot(docRef, (doc) => {
+      if (doc.exists() && doc.data().logoUrl) {
+        setLogoUrl(doc.data().logoUrl);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   return (
     <footer className="bg-slate-50 py-20 border-t border-slate-200">
       <div className="container mx-auto px-6">
@@ -9,9 +22,9 @@ const Footer: React.FC = () => {
           <div className="col-span-1 md:col-span-1 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 shadow-sm bg-white">
-                <img 
-                  src="https://www.farmersmeenchatti.in/img/logo-sm.jpg" 
-                  alt="Farmers Meenchatti Logo" 
+                <img
+                  src={logoUrl}
+                  alt="Farmers Meenchatti Logo"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -46,9 +59,9 @@ const Footer: React.FC = () => {
             <h4 className="font-bold text-slate-900 mb-6 uppercase text-xs tracking-widest">Newsletter</h4>
             <p className="text-sm text-slate-500 mb-4">Subscribe to get spicy updates and recipes.</p>
             <div className="flex">
-              <input 
-                type="email" 
-                placeholder="Email address" 
+              <input
+                type="email"
+                placeholder="Email address"
                 className="bg-white border border-slate-200 px-4 py-2 rounded-l-lg focus:outline-none focus:border-sky-700 flex-1"
               />
               <button className="bg-sky-700 text-white px-4 py-2 rounded-r-lg hover:bg-sky-800 transition-colors">
