@@ -6,10 +6,12 @@ import Hero from '../components/Hero';
 import Menu from '../components/Menu';
 import Process from '../components/Process';
 import HealthBenefits from '../components/HealthBenefits';
+import SEO from '../components/SEO';
 
 import Reviews from '../components/Reviews';
 import VideoReviews from '../components/VideoReviews';
 import Footer from '../components/Footer';
+import LiveCatchTicker from '../components/LiveCatchTicker';
 import { isOpenNow } from '../utils/timeUtils';
 import MenuCard from '../components/MenuCard';
 import SignatureHighlights from '../components/SignatureHighlights';
@@ -28,6 +30,10 @@ const Home: React.FC = () => {
         weekendOpeningTime: '11:00 AM',
         weekendClosingTime: '11:00 PM'
     });
+    const [seoData, setSeoData] = useState({
+        tagline: '',
+        subTagline: ''
+    });
 
     useEffect(() => {
         const unsubscribe = onSnapshot(doc(db, 'settings', 'general'), (doc) => {
@@ -38,6 +44,10 @@ const Home: React.FC = () => {
                     closingTime: data.closingTime || '10:30 PM',
                     weekendOpeningTime: data.weekendOpeningTime || '11:00 AM',
                     weekendClosingTime: data.weekendClosingTime || '11:00 PM'
+                });
+                setSeoData({
+                    tagline: data.tagline || '',
+                    subTagline: data.subTagline || ''
                 });
             }
         });
@@ -52,6 +62,11 @@ const Home: React.FC = () => {
 
     return (
         <div className="min-h-screen selection:bg-sky-100 selection:text-sky-900 overflow-x-hidden">
+            <LiveCatchTicker />
+            <SEO
+                title={seoData.tagline?.replace(/\\n/g, ' ')}
+                description={seoData.subTagline}
+            />
             <Navbar onMenuClick={() => setIsMenuOpen(true)} />
 
             <main>
@@ -59,7 +74,9 @@ const Home: React.FC = () => {
                 <Hero onMenuClick={() => setIsMenuOpen(true)} />
 
                 {/* Section 2: Signature Highlights */}
-                <SignatureHighlights onSeeAllClick={() => setIsImageModalOpen(true)} />
+                <SignatureHighlights
+                    onItemClick={() => setIsMenuOpen(true)}
+                />
 
                 {/* Section 3: Process Journey */}
                 <Process />

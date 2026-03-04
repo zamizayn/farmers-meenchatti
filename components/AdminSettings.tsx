@@ -1,40 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
-import { Save, Upload, Image as ImageIcon } from 'lucide-react';
+import { db, storage } from '../firebase';
+import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { Loader2, Save, Image as ImageIcon, Upload } from 'lucide-react';
 
 const AdminSettings: React.FC = () => {
-    const [tagline, setTagline] = useState('');
-    const [subTagline, setSubTagline] = useState('');
-    const [dailySpecialActive, setDailySpecialActive] = useState(false);
-    const [dailySpecialText, setDailySpecialText] = useState('');
-    const [openingTime, setOpeningTime] = useState('');
-    const [closingTime, setClosingTime] = useState('');
-    const [weekendOpeningTime, setWeekendOpeningTime] = useState('');
-    const [weekendClosingTime, setWeekendClosingTime] = useState('');
-    const [logoUrl, setLogoUrl] = useState('');
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [settings, setSettings] = useState({
+        tagline: '',
+        subTagline: '',
+        dailySpecialActive: false,
+        dailySpecialText: '',
+        openingTime: '',
+        closingTime: '',
+        weekendOpeningTime: '',
+        weekendClosingTime: '',
+        liveCatchActive: false,
+        liveCatchText: '',
+        logoUrl: '',
+        menuImageUrl: ''
+    });
 
     useEffect(() => {
         const fetchSettings = async () => {
             const docRef = doc(db, 'settings', 'general');
-            const unsubscribe = onSnapshot(docRef, (doc) => {
-                if (doc.exists()) {
-                    setTagline(doc.data().tagline || '');
-                    setSubTagline(doc.data().subTagline || '');
-                    setDailySpecialActive(doc.data().dailySpecialActive || false);
-                    setDailySpecialText(doc.data().dailySpecialText || '');
-                    setOpeningTime(doc.data().openingTime || '11:00 AM');
-                    setClosingTime(doc.data().closingTime || '10:30 PM');
-                    setWeekendOpeningTime(doc.data().weekendOpeningTime || '11:00 AM');
-                    setWeekendClosingTime(doc.data().weekendClosingTime || '11:00 PM');
-                    setLogoUrl(doc.data().logoUrl || 'https://www.farmersmeenchatti.in/img/logo-sm.jpg');
+            const unsubscribe = onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setSettings({
+                        tagline: data.tagline || '',
+                        subTagline: data.subTagline || '',
+                        dailySpecialActive: data.dailySpecialActive || false,
+                        dailySpecialText: data.dailySpecialText || '',
+                        openingTime: data.openingTime || '11:00 AM',
+                        closingTime: data.closingTime || '10:30 PM',
+                        weekendOpeningTime: data.weekendOpeningTime || '11:00 AM',
+                        weekendClosingTime: data.weekendClosingTime || '11:00 PM',
+                        liveCatchActive: data.liveCatchActive || false,
+                        liveCatchText: data.liveCatchText || '',
+                        logoUrl: data.logoUrl || 'https://www.farmersmeenchatti.in/img/logo-sm.jpg',
+                        menuImageUrl: data.menuImageUrl || ''
+                    });
                 } else {
                     // Initialize default if not exists
-                    setTagline("കടലിന്റെ രുചി. \nകളിമണ്ണിന്റെ മണം.");
-                    setSubTagline("Rediscover the ancestral art of Kerala seafood.");
+                    setSettings(prev => ({
+                        ...prev,
+                        tagline: "കടലിന്റെ രുചി. \nകളിമണ്ണിന്റെ മണം.",
+                        subTagline: "Rediscover the ancestral art of Kerala seafood.",
+                    }));
                 }
                 setLoading(false);
             });
@@ -43,45 +58,65 @@ const AdminSettings: React.FC = () => {
         fetchSettings();
     }, []);
 
-    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Check file size (Firestore limit is 1MB, let's keep logo under 500KB)
-        if (file.size > 500 * 1024) {
-            alert("File is too large! Please upload a logo smaller than 500KB.");
-            return;
+        setUploading(true);
+        try {
+            const storageRef = ref(storage, `branding/logo_${Date.now()}`);
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            setSettings(prev => ({ ...prev, logoUrl: downloadURL }));
+            alert('Logo uploaded successfully! Don\'t forget to save settings.');
+        } catch (error: any) {
+            console.error("Error uploading logo:", error);
+            if (error.code === 'storage/unauthorized') {
+                alert("Upload failed: Permission denied. Please check your Firebase Storage Rules.");
+            } else {
+                alert(`Failed to upload logo: ${error.message || 'Unknown error'}`);
+            }
+        } finally {
+            setUploading(false);
         }
+    };
+
+    const handleMenuUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
         setUploading(true);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setLogoUrl(reader.result as string);
+        try {
+            const storageRef = ref(storage, `branding/menu_${Date.now()}`);
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            setSettings(prev => ({ ...prev, menuImageUrl: downloadURL }));
+            alert('Menu image uploaded successfully! Don\'t forget to save settings.');
+        } catch (error: any) {
+            console.error("Error uploading menu image:", error);
+            alert(`Failed to upload menu: ${error.message || 'Unknown error'}`);
+        } finally {
             setUploading(false);
-            alert('Logo converted to Base64! Don\'t forget to save settings.');
-        };
-        reader.onerror = () => {
-            console.error("Error reading file");
-            alert("Failed to read file.");
-            setUploading(false);
-        };
-        reader.readAsDataURL(file);
+        }
     };
 
     const handleSave = async () => {
         setSaving(true);
         try {
-            await setDoc(doc(db, 'settings', 'general'), {
-                tagline,
-                subTagline,
-                dailySpecialActive,
-                dailySpecialText,
-                openingTime,
-                closingTime,
-                weekendOpeningTime,
-                weekendClosingTime,
-                logoUrl
-            }, { merge: true });
+            await updateDoc(doc(db, 'settings', 'general'), {
+                tagline: settings.tagline,
+                subTagline: settings.subTagline,
+                dailySpecialActive: settings.dailySpecialActive,
+                dailySpecialText: settings.dailySpecialText,
+                openingTime: settings.openingTime,
+                closingTime: settings.closingTime,
+                weekendOpeningTime: settings.weekendOpeningTime,
+                weekendClosingTime: settings.weekendClosingTime,
+                liveCatchActive: settings.liveCatchActive,
+                liveCatchText: settings.liveCatchText,
+                logoUrl: settings.logoUrl,
+                menuImageUrl: settings.menuImageUrl
+            });
             alert('Settings saved!');
         } catch (error) {
             console.error("Error saving settings:", error);
@@ -102,25 +137,65 @@ const AdminSettings: React.FC = () => {
                     <div className="space-y-4 pb-6 border-b border-slate-100">
                         <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Brand Logo</label>
                         <div className="flex items-center gap-6">
-                            <div className="w-24 h-24 rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative group">
-                                {logoUrl ? (
-                                    <img src={logoUrl} alt="Logo Preview" className="w-full h-full object-cover" />
+                            <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative group">
+                                {uploading ? (
+                                    <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+                                ) : settings.logoUrl ? (
+                                    <img src={settings.logoUrl} alt="Logo Preview" className="w-full h-full object-cover" />
                                 ) : (
-                                    <ImageIcon className="text-slate-300" size={32} />
+                                    <ImageIcon className="w-8 h-8 text-slate-300" />
                                 )}
-                                {uploading && (
-                                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                                        <div className="w-6 h-6 border-2 border-sky-600 border-t-transparent rounded-full animate-spin"></div>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex-1 space-y-2">
-                                <label className="inline-flex items-center gap-2 bg-sky-50 text-sky-700 px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-sky-100 transition-all border border-sky-200">
-                                    <Upload size={16} />
-                                    {uploading ? 'Uploading...' : 'Upload New Logo'}
+                                <label className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                                    <Upload className="text-white w-6 h-6" />
                                     <input type="file" className="hidden" accept="image/*" onChange={handleLogoUpload} disabled={uploading} />
                                 </label>
-                                <p className="text-xs text-slate-400">Recommended: Square image, minimum 200x200px. PNG or JPG.</p>
+                            </div>
+                            <div className="flex-1 space-y-4">
+                                <div className="space-y-1">
+                                    <p className="text-sm font-bold text-slate-700">Appbar Logo</p>
+                                    <p className="text-xs text-slate-500">Recommended: Square PNG/JPG, min 200x200px</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <input
+                                        value={settings.logoUrl}
+                                        onChange={e => setSettings({ ...settings, logoUrl: e.target.value })}
+                                        className="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all font-mono text-xs"
+                                        placeholder="Or paste image URL here..."
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 pb-6 border-b border-slate-100">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Full Menu Image</label>
+                        <div className="flex items-center gap-6">
+                            <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative group">
+                                {uploading ? (
+                                    <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+                                ) : settings.menuImageUrl ? (
+                                    <img src={settings.menuImageUrl} alt="Menu Preview" className="w-full h-full object-cover" />
+                                ) : (
+                                    <ImageIcon className="w-8 h-8 text-slate-300" />
+                                )}
+                                <label className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                                    <Upload className="text-white w-6 h-6" />
+                                    <input type="file" className="hidden" accept="image/*" onChange={handleMenuUpload} disabled={uploading} />
+                                </label>
+                            </div>
+                            <div className="flex-1 space-y-4">
+                                <div className="space-y-1">
+                                    <p className="text-sm font-bold text-slate-700">Detailed Menu Image</p>
+                                    <p className="text-xs text-slate-500">This appears when users click "See Full Menu" on homepage.</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <input
+                                        value={settings.menuImageUrl}
+                                        onChange={e => setSettings({ ...settings, menuImageUrl: e.target.value })}
+                                        className="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all font-mono text-xs"
+                                        placeholder="Or paste menu image URL here..."
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -129,8 +204,8 @@ const AdminSettings: React.FC = () => {
                         <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Main Tagline (Malayalam/English)</label>
                         <textarea
                             rows={3}
-                            value={tagline}
-                            onChange={(e) => setTagline(e.target.value)}
+                            value={settings.tagline}
+                            onChange={(e) => setSettings(prev => ({ ...prev, tagline: e.target.value }))}
                             className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all font-bold text-lg"
                             placeholder="Enter main tagline..."
                         />
@@ -141,8 +216,8 @@ const AdminSettings: React.FC = () => {
                         <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Sub-Tagline / Description</label>
                         <textarea
                             rows={3}
-                            value={subTagline}
-                            onChange={(e) => setSubTagline(e.target.value)}
+                            value={settings.subTagline}
+                            onChange={(e) => setSettings(prev => ({ ...prev, subTagline: e.target.value }))}
                             className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all"
                             placeholder="Enter description..."
                         />
@@ -154,19 +229,19 @@ const AdminSettings: React.FC = () => {
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    checked={dailySpecialActive}
-                                    onChange={e => setDailySpecialActive(e.target.checked)}
+                                    checked={settings.dailySpecialActive}
+                                    onChange={e => setSettings(prev => ({ ...prev, dailySpecialActive: e.target.checked }))}
                                     className="sr-only peer"
                                 />
                                 <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
                             </label>
                         </div>
-                        {dailySpecialActive && (
+                        {settings.dailySpecialActive && (
                             <div className="animate-in fade-in slide-in-from-top-2">
                                 <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Special Message</label>
                                 <input
-                                    value={dailySpecialText}
-                                    onChange={(e) => setDailySpecialText(e.target.value)}
+                                    value={settings.dailySpecialText}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, dailySpecialText: e.target.value }))}
                                     className="w-full bg-amber-50 border border-amber-200 p-4 rounded-xl focus:border-amber-500 focus:bg-white outline-none transition-all mt-2"
                                     placeholder="e.g. Sunday Special: Crab Roast Available!"
                                 />
@@ -175,13 +250,42 @@ const AdminSettings: React.FC = () => {
                     </div>
 
                     <div className="space-y-4 pt-4 border-t border-slate-100">
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Shop Timings</label>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block">Live Catch Ticker</label>
+                                <p className="text-[10px] text-slate-400 mt-1">Scrolling announcement bar (e.g. today's fresh harbor arrivals)</p>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={settings.liveCatchActive}
+                                    onChange={e => setSettings(prev => ({ ...prev, liveCatchActive: e.target.checked }))}
+                                    className="sr-only peer"
+                                />
+                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sky-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>
+                            </label>
+                        </div>
+                        {settings.liveCatchActive && (
+                            <div className="animate-in fade-in slide-in-from-top-2">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">Ticker Message</label>
+                                <input
+                                    value={settings.liveCatchText}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, liveCatchText: e.target.value }))}
+                                    className="w-full bg-sky-50 border border-sky-200 p-4 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all mt-2"
+                                    placeholder="e.g. 🏮 Fresh Tiger Prawns & Crab arrived from the morning harbor catch!"
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t border-slate-100">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">Shop Timings</label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold text-slate-500 uppercase">Weekday Opening</label>
                                 <input
-                                    value={openingTime}
-                                    onChange={(e) => setOpeningTime(e.target.value)}
+                                    value={settings.openingTime}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, openingTime: e.target.value }))}
                                     className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 outline-none"
                                     placeholder="e.g. 11:00 AM"
                                 />
@@ -189,8 +293,8 @@ const AdminSettings: React.FC = () => {
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold text-slate-500 uppercase">Weekday Closing</label>
                                 <input
-                                    value={closingTime}
-                                    onChange={(e) => setClosingTime(e.target.value)}
+                                    value={settings.closingTime}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, closingTime: e.target.value }))}
                                     className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 outline-none"
                                     placeholder="e.g. 10:30 PM"
                                 />
@@ -198,8 +302,8 @@ const AdminSettings: React.FC = () => {
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold text-slate-500 uppercase">Weekend Opening</label>
                                 <input
-                                    value={weekendOpeningTime}
-                                    onChange={(e) => setWeekendOpeningTime(e.target.value)}
+                                    value={settings.weekendOpeningTime}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, weekendOpeningTime: e.target.value }))}
                                     className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 outline-none"
                                     placeholder="e.g. 11:00 AM"
                                 />
@@ -207,8 +311,8 @@ const AdminSettings: React.FC = () => {
                             <div className="space-y-2">
                                 <label className="text-[10px] font-bold text-slate-500 uppercase">Weekend Closing</label>
                                 <input
-                                    value={weekendClosingTime}
-                                    onChange={(e) => setWeekendClosingTime(e.target.value)}
+                                    value={settings.weekendClosingTime}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, weekendClosingTime: e.target.value }))}
                                     className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 outline-none"
                                     placeholder="e.g. 11:00 PM"
                                 />
@@ -226,7 +330,7 @@ const AdminSettings: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 max-w-2xl mt-8">
+            {/* <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 max-w-2xl mt-8">
                 <h3 className="text-xl font-bold text-slate-900 mb-4">Database Tools</h3>
                 <p className="text-sm text-slate-500 mb-4">Use this to populate the database with initial dummy data (Menu Items & Reviews).</p>
                 <button
@@ -250,7 +354,7 @@ const AdminSettings: React.FC = () => {
                 >
                     🌱 Seed Database
                 </button>
-            </div>
+            </div> */}
         </div >
     );
 };

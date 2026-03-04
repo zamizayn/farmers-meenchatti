@@ -1,12 +1,14 @@
-
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
+import { motion } from 'framer-motion';
 
 const HealthBenefits: React.FC = () => {
+  const { t } = useLanguage();
   const benefits = [
-    { title: "Alkaline Property", desc: "Clay is alkaline in nature, which interacts with the acidity of the food and neutralizes the pH balance.", icon: "⚖️" },
-    { title: "Oil Reduction", desc: "Clay pots are heat-resistant and slow-cooking allows food to retain its natural oils, requiring less added fat.", icon: "💧" },
-    { title: "Mineral Rich", desc: "Cooking in clay adds essential minerals like calcium, phosphorus, iron, and magnesium to your diet.", icon: "💎" },
-    { title: "Nutrient Retention", desc: "The porous nature of clay allows heat and moisture to circulate evenly, preserving 100% of nutrients.", icon: "🌿" }
+    { title: t('wellness_benefit1_title'), desc: t('wellness_benefit1_desc'), icon: "⚖️" },
+    { title: t('wellness_benefit2_title'), desc: t('wellness_benefit2_desc'), icon: "💧" },
+    { title: t('wellness_benefit3_title'), desc: t('wellness_benefit3_desc'), icon: "💎" },
+    { title: t('wellness_benefit4_title'), desc: t('wellness_benefit4_desc'), icon: "🌿" }
   ];
 
   return (
@@ -14,10 +16,10 @@ const HealthBenefits: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8">
-            <span className="text-sky-700 font-bold uppercase tracking-[0.2em] text-sm">Wellness First</span>
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 leading-tight">Why Clay is Better for Your Body</h2>
+            <span className="text-sky-700 font-bold uppercase tracking-[0.2em] text-sm">{t('section_wellness')}</span>
+            <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 leading-tight">{t('wellness_title')}</h2>
             <p className="text-slate-600 text-lg leading-relaxed">
-              Traditional wisdom meets modern science. Cooking in clay isn't just about taste—it's a lifestyle choice for better digestion and health.
+              {t('wellness_desc')}
             </p>
 
             <div className="grid sm:grid-cols-2 gap-6">
@@ -41,8 +43,8 @@ const HealthBenefits: React.FC = () => {
             </div>
             {/* Overlay card */}
             <div className="absolute -bottom-10 -left-10 bg-sky-700 text-white p-8 rounded-3xl shadow-2xl max-w-xs -rotate-3">
-              <p className="text-2xl font-serif font-bold mb-2">100% Lead Free</p>
-              <p className="text-sky-100 text-sm italic">Tested and certified for food safety and non-toxicity.</p>
+              <p className="text-2xl font-serif font-bold mb-2">{t('wellness_leadfree')}</p>
+              <p className="text-sky-100 text-sm italic">{t('wellness_leadfree_desc')}</p>
             </div>
           </div>
         </div>

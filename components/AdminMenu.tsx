@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Product, Category } from '../types';
-import { Plus, Edit2, Trash2, X, Save, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Save, Image as ImageIcon, Upload, Loader2 } from 'lucide-react';
 
 const AdminMenu: React.FC = () => {
     const [items, setItems] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]); // Dynamic Categories
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentItem, setCurrentItem] = useState<Partial<Product>>({
         name: '',
@@ -17,7 +19,9 @@ const AdminMenu: React.FC = () => {
         category: '',
         type: 'non-veg',
         isHighlighted: false,
-        highlightTagline: ''
+        highlightTagline: '',
+        startTime: '',
+        endTime: ''
     });
 
     useEffect(() => {
@@ -53,7 +57,6 @@ const AdminMenu: React.FC = () => {
         };
     }, []);
 
-    // Ensure currentItem has a default category if categories are loaded and it's empty
     useEffect(() => {
         if (!currentItem.category && categories.length > 0) {
             setCurrentItem(prev => ({ ...prev, category: categories[0].name }));
@@ -93,6 +96,28 @@ const AdminMenu: React.FC = () => {
         setIsEditing(true);
     };
 
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+        try {
+            const storageRef = ref(storage, `menu_items/${Date.now()}_${file.name}`);
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            setCurrentItem({ ...currentItem, image: downloadURL });
+        } catch (error: any) {
+            console.error("Error uploading image:", error);
+            if (error.code === 'storage/unauthorized') {
+                alert("Upload failed: Permission denied. Please check your Firebase Storage Rules.");
+            } else {
+                alert(`Failed to upload image: ${error.message || 'Unknown error'}`);
+            }
+        } finally {
+            setUploading(false);
+        }
+    };
+
     const resetForm = () => {
         setCurrentItem({
             name: '',
@@ -102,7 +127,9 @@ const AdminMenu: React.FC = () => {
             category: categories.length > 0 ? categories[0].name : '',
             type: 'non-veg',
             isHighlighted: false,
-            highlightTagline: ''
+            highlightTagline: '',
+            startTime: '',
+            endTime: ''
         });
     };
 
@@ -154,20 +181,35 @@ const AdminMenu: React.FC = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-slate-400 uppercase">Image URL (Link)</label>
-                                <div className="flex gap-2">
-                                    <input
-                                        required
-                                        value={currentItem.image}
-                                        onChange={e => setCurrentItem({ ...currentItem, image: e.target.value })}
-                                        className="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all font-mono text-xs"
-                                        placeholder="https://..."
-                                    />
-                                    {currentItem.image && (
-                                        <div className="w-12 h-12 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
-                                            <img src={currentItem.image} alt="Preview" className="w-full h-full object-cover" />
-                                        </div>
-                                    )}
+                                <label className="text-xs font-bold text-slate-400 uppercase">Dish Image</label>
+                                <div className="flex gap-4 items-center">
+                                    <div className="flex-1">
+                                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-200 border-dashed rounded-2xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition-all group overflow-hidden relative">
+                                            {uploading ? (
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <Loader2 className="w-8 h-8 text-sky-600 animate-spin" />
+                                                    <span className="text-xs font-bold text-sky-600 uppercase">Uploading...</span>
+                                                </div>
+                                            ) : currentItem.image ? (
+                                                <img src={currentItem.image} alt="Preview" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <Upload className="w-8 h-8 text-slate-400 group-hover:text-sky-600 transition-colors mb-2" />
+                                                    <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Click to upload image</p>
+                                                </div>
+                                            )}
+                                            <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+                                        </label>
+                                    </div>
+                                    <div className="flex-1 space-y-2">
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase">Or Paste URL</label>
+                                        <input
+                                            value={currentItem.image}
+                                            onChange={e => setCurrentItem({ ...currentItem, image: e.target.value })}
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all font-mono text-xs"
+                                            placeholder="https://..."
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
@@ -181,6 +223,27 @@ const AdminMenu: React.FC = () => {
                                     className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all text-sm"
                                     placeholder="Describe the ingredients and taste..."
                                 />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-6 pb-4 border-b border-slate-100">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Available From (Optional)</label>
+                                    <input
+                                        type="time"
+                                        value={currentItem.startTime || ''}
+                                        onChange={e => setCurrentItem({ ...currentItem, startTime: e.target.value })}
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 outline-none transition-all"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase">Available Until (Optional)</label>
+                                    <input
+                                        type="time"
+                                        value={currentItem.endTime || ''}
+                                        onChange={e => setCurrentItem({ ...currentItem, endTime: e.target.value })}
+                                        className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 outline-none transition-all"
+                                    />
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-6">

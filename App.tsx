@@ -20,7 +20,6 @@ import DailySpecialPopup from './components/DailySpecialPopup';
 const App: React.FC = () => {
   return (
     <Router>
-      <SEO />
       <DailySpecialPopup />
       <Suspense fallback={<PageLoader />}>
         <Routes>

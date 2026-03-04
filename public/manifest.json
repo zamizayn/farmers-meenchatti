@@ -1,0 +1,22 @@
+{
+    "name": "Farmers Meenchatti",
+    "short_name": "Meenchatti",
+    "description": "Authentic Kerala Seafood & Clay Pot Cooking",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f0f9ff",
+    "theme_color": "#082f49",
+    "icons": [
+        {
+            "src": "https://www.farmersmeenchatti.in/img/logo-sm.jpg",
+            "sizes": "192x192",
+            "type": "image/jpg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "https://www.farmersmeenchatti.in/img/logo-sm.jpg",
+            "sizes": "512x512",
+            "type": "image/jpg"
+        }
+    ]
+}

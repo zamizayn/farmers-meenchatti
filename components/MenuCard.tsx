@@ -2,7 +2,9 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { Product } from '../types';
-import { X } from 'lucide-react';
+import { PRODUCTS } from '../constants'; // Fallback
+import { X, ShoppingBasket, Plus, Minus, Send } from 'lucide-react';
+import { isProductAvailable } from '../utils/timeUtils';
 
 interface MenuCardProps {
   isOpen: boolean;
@@ -12,6 +14,8 @@ interface MenuCardProps {
 const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState<{ product: Product, quantity: number }[]>([]);
+  const [showCart, setShowCart] = useState(false);
 
   // Fetch products when modal opens
   useEffect(() => {
@@ -59,6 +63,46 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
     return Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
   }, [products]);
 
+  const addToCart = (product: Product) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.product.id === product.id);
+      if (existing) {
+        return prev.map(item =>
+          item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [...prev, { product, quantity: 1 }];
+    });
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.product.id === productId);
+      if (existing && existing.quantity > 1) {
+        return prev.map(item =>
+          item.product.id === productId ? { ...item, quantity: item.quantity - 1 } : item
+        );
+      }
+      return prev.filter(item => item.product.id !== productId);
+    });
+  };
+
+  const cartTotal = cart.reduce((total, item) => {
+    const price = parseInt(item.product.price.replace(/[^\d]/g, '')) || 0;
+    return total + (price * item.quantity);
+  }, 0);
+
+  const handleCheckout = () => {
+    const phoneNumber = "919778702863"; // Same as reservation phone
+    let message = `* Order from Website *\n\nItems: \n`;
+    cart.forEach(item => {
+      message += `- ${item.product.name} x ${item.quantity} (${item.product.price})\n`;
+    });
+    message += `\n*Total: ₹${cartTotal}*\n\nPlease confirm availability and let me know the estimated time!`;
+
+    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -78,12 +122,25 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
             <h2 className="text-3xl md:text-5xl font-serif font-bold text-slate-900">Grand Menu</h2>
             <p className="text-sky-600 font-bold uppercase tracking-[0.2em] text-xs">Farmers Meenchatti Heritage</p>
           </div>
-          <button
-            onClick={onClose}
-            className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-sky-100 hover:text-sky-700 transition-all active:scale-90"
-          >
-            <X size={24} />
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowCart(!showCart)}
+              className="relative p-3 bg-sky-50 rounded-2xl text-sky-700 hover:bg-sky-600 hover:text-white transition-all group"
+            >
+              <ShoppingBasket size={24} />
+              {cart.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-sky-950 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white scale-110 group-hover:scale-125 transition-transform">
+                  {cart.reduce((a, b) => a + b.quantity, 0)}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={onClose}
+              className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-red-50 hover:text-red-500 transition-all active:scale-90"
+            >
+              <X size={24} />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
@@ -130,9 +187,31 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
                           <span className="font-serif font-bold text-slate-900 text-lg whitespace-nowrap">{item.price}</span>
                         </div>
                         <p className="text-sm text-slate-500 leading-relaxed italic line-clamp-2">{item.description}</p>
-                        <div className="mt-auto pt-2 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider">{item.category}</span>
-                          <button className="text-xs font-bold text-sky-600 hover:text-sky-800 transition-colors">Add to Order +</button>
+
+                        {item.startTime && item.endTime && (
+                          <p className="text-[10px] font-bold text-sky-600/60 uppercase tracking-widest">
+                            Available: {item.startTime} - {item.endTime}
+                          </p>
+                        )}
+
+                        {!isProductAvailable(item) && (
+                          <div className="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-1 rounded-md border border-red-100 mt-1 self-start animate-pulse">
+                            Currently Unavailable
+                          </div>
+                        )}
+
+                        <div className="mt-auto pt-4 flex justify-between items-center">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none bg-slate-50 px-2 py-1 rounded-md">{item.category}</span>
+                          <button
+                            onClick={() => addToCart(item)}
+                            disabled={!isProductAvailable(item)}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md active:scale-95 flex items-center gap-2 ${isProductAvailable(item)
+                              ? 'bg-sky-600 hover:bg-sky-950 text-white'
+                              : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+                              }`}
+                          >
+                            <Plus size={14} /> {isProductAvailable(item) ? 'Add' : 'Unavailable'}
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -154,12 +233,87 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
           )}
         </div>
 
+
+        {/* Cart Overlay / Drawer */}
+        {showCart && (
+          <div className="absolute inset-0 z-20 flex justify-end animate-in fade-in duration-300">
+            <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setShowCart(false)}></div>
+            <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right-10 duration-500">
+              <div className="p-8 border-b border-slate-100 flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-sky-50 text-sky-700 rounded-xl flex items-center justify-center">
+                    <ShoppingBasket size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 leading-none">Your Basket</h3>
+                    <p className="text-xs text-slate-400 mt-1 uppercase font-bold tracking-widest">Confirm your selection</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowCart(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors">
+                  <X className="text-slate-400" size={24} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-8 space-y-6">
+                {cart.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
+                    <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200">
+                      <ShoppingBasket size={40} />
+                    </div>
+                    <div>
+                      <p className="text-slate-900 font-bold">Your basket is empty</p>
+                      <p className="text-slate-400 text-sm">Add some clay pot deliciousness!</p>
+                    </div>
+                  </div>
+                ) : (
+                  cart.map((item) => (
+                    <div key={item.product.id} className="flex gap-4 items-center">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
+                        <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-slate-900 text-sm truncate">{item.product.name}</h4>
+                        <p className="text-sky-600 font-bold text-sm tracking-tight">{item.product.price}</p>
+                      </div>
+                      <div className="flex items-center gap-3 bg-slate-50 rounded-xl p-1 px-2">
+                        <button onClick={() => removeFromCart(item.product.id)} className="p-1 hover:bg-white hover:text-red-500 rounded-lg transition-all">
+                          <Minus size={14} />
+                        </button>
+                        <span className="font-bold text-sm min-w-[1rem] text-center">{item.quantity}</span>
+                        <button onClick={() => addToCart(item.product)} className="p-1 hover:bg-white hover:text-sky-600 rounded-lg transition-all">
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {cart.length > 0 && (
+                <div className="p-8 bg-slate-50 border-t border-slate-100 space-y-6">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500 font-medium">Estimated Total</span>
+                    <span className="text-2xl font-serif font-bold text-slate-900">₹{cartTotal}</span>
+                  </div>
+                  <button
+                    onClick={handleCheckout}
+                    className="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white py-5 rounded-2xl font-bold text-lg transition-all shadow-xl shadow-green-100 flex items-center justify-center gap-3 active:scale-[0.98]"
+                  >
+                    <Send size={20} /> Checkout on WhatsApp
+                  </button>
+                  <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest">Available for Home Delivery & Takeaway</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="p-6 md:p-8 bg-sky-950 text-white flex justify-between items-center shrink-0">
-          <p className="text-xs md:text-sm font-medium opacity-60">Handcrafted Spices • No MSG • Farm Fresh</p>
-          {/* <button className="bg-sky-600 hover:bg-sky-700 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg active:scale-95 text-sm md:text-base">
-            Proceed to Order
-          </button> */}
+          <p className="text-xs md:text-sm font-medium opacity-60 italic">Authentic Heritage • Handcrafted Spices • Coastal Tradition</p>
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] text-sky-400 font-bold uppercase tracking-[0.2em] hidden md:block">Est. 2024</span>
+          </div>
         </div>
       </div>
 
@@ -178,7 +332,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
           background: #7dd3fc;
         }
       `}</style>
-    </div>
+    </div >
   );
 };
 

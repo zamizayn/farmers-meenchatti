@@ -9,6 +9,8 @@ export interface Product {
   type: 'veg' | 'non-veg';
   isHighlighted?: boolean;
   highlightTagline?: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 export interface Category {

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { isOpenNow } from '../utils/timeUtils';
+import { useLanguage } from '../context/LanguageContext';
 
 interface HeroProps {
   onMenuClick: () => void;
 }
 
 const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
+  const { language, t } = useLanguage();
   const [tagline, setTagline] = useState("");
   const [subTagline, setSubTagline] = useState("");
   const [timings, setTimings] = useState({
@@ -53,7 +55,7 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
           </div>
 
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold leading-[1.2] text-slate-900">
-            {tagline.split('\n').map((line, i) => (
+            {(language === 'en' && tagline ? tagline : t('hero_tagline')).split('\n').map((line, i) => (
               <React.Fragment key={i}>
                 {i === 1 ? (
                   <span className="text-sky-600 italic relative block mt-2">
@@ -70,15 +72,15 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
           </h1>
 
           <p className="text-xl text-slate-600 leading-relaxed max-w-lg pt-4">
-            {subTagline}
+            {language === 'en' && subTagline ? subTagline : t('hero_subtagline')}
           </p>
 
           <div className="flex flex-wrap gap-5 items-center">
             <button
               onClick={onMenuClick}
-              className="group bg-sky-600 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-sky-700 transition-all shadow-2xl shadow-sky-600/30 flex items-center gap-2"
+              className="group bg-sky-600 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-sky-700 transition-all shadow-2xl shadow-sky-600/30 flex items-center gap-4"
             >
-              Explore Our Catch
+              {t('hero_cta')}
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </button>
 

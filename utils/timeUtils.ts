@@ -45,3 +45,27 @@ export const isOpenNow = (timings: Timings): boolean => {
 
     return currentMinutes >= openingMinutes && currentMinutes <= closingMinutes;
 };
+
+/**
+ * Checks if a specific product is available based on its custom time range.
+ */
+export const isProductAvailable = (item: { startTime?: string, endTime?: string }): boolean => {
+    if (!item.startTime || !item.endTime) return true;
+
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    // HTML5 time input strings "HH:MM"
+    const [startHours, startMinutes] = item.startTime.split(':').map(Number);
+    const [endHours, endMinutes] = item.endTime.split(':').map(Number);
+
+    const startTotal = startHours * 60 + startMinutes;
+    const endTotal = endHours * 60 + endMinutes;
+
+    if (endTotal < startTotal) {
+        // Over midnight
+        return currentMinutes >= startTotal || currentMinutes <= endTotal;
+    }
+
+    return currentMinutes >= startTotal && currentMinutes <= endTotal;
+};

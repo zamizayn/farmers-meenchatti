@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { NAV_ITEMS } from '../constants';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
+import { useLanguage } from '../context/LanguageContext';
+import { Globe } from 'lucide-react';
 
 interface NavbarProps {
   onMenuClick: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
+  const { language, setLanguage, t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [logoUrl, setLogoUrl] = useState('https://www.farmersmeenchatti.in/img/logo-sm.jpg');
 
@@ -61,9 +64,11 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
               onClick={(e) => handleLinkClick(e, item.href)}
               className="text-slate-600 hover:text-sky-600 font-medium transition-colors text-sm uppercase tracking-wider"
             >
-              {item.label}
+              {t(`nav_${item.label.toLowerCase().replace(' ', '_')}`)}
             </a>
           ))}
+
+
           <button
             onClick={onMenuClick}
             className="bg-sky-600 text-white px-6 py-2.5 rounded-full hover:bg-sky-700 transition-all shadow-lg hover:shadow-sky-600/20 active:scale-95"

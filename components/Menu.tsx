@@ -3,6 +3,7 @@ import { db } from '../firebase';
 import { collection, query, limit, getDocs } from 'firebase/firestore';
 import { Product } from '../types';
 import { PRODUCTS } from '../constants'; // Fallback
+import { isProductAvailable } from '../utils/timeUtils';
 
 interface MenuProps {
   onExploreClick: () => void;
@@ -25,10 +26,6 @@ const Menu: React.FC<MenuProps> = ({ onExploreClick }) => {
           })) as Product[];
           setProducts(fetchedProducts);
         } else {
-          // Fallback to static if DB is empty to avoid empty section initially
-          // But usually we want DB only. Let's start with empty and if empty show static?
-          // User requested "load this from database". So we should prefer DB.
-          // If DB is empty, maybe showing nothing is bad UX. Let's show fallback for demo.
           setProducts(PRODUCTS as any);
         }
       } catch (error) {
@@ -88,6 +85,13 @@ const Menu: React.FC<MenuProps> = ({ onExploreClick }) => {
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
+                  {!isProductAvailable(product) && (
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] flex items-center justify-center p-4">
+                      <span className="bg-red-600 text-white px-4 py-2 rounded-xl font-bold translate-y-0 shadow-xl text-xs uppercase tracking-widest border border-red-400/50">
+                        Unavailable Now
+                      </span>
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-sky-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <span className="bg-white text-slate-900 px-6 py-3 rounded-full font-bold shadow-xl translate-y-4 group-hover:translate-y-0 transition-transform">
                       View Dish

@@ -10,14 +10,17 @@ interface SEOProps {
 }
 
 const SEO: React.FC<SEOProps> = ({
-    title = "Farmers Meenchatti | Authentic Kerala Seafood & Clay Pot Cooking",
-    description = "Experience the soul of Kerala seafood with Farmers Meenchatti. Wild-caught fish curries cooked in traditional clay pots (Meenchatti) for authentic flavor.",
+    title,
+    description,
     image = "https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=1200",
     url = "https://farmersmeenchatti.com",
     type = "website"
 }) => {
     const siteTitle = "Farmers Meenchatti";
-    const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
+    const defaultDescription = "Experience the soul of Kerala seafood with Farmers Meenchatti. Wild-caught fish curries cooked in traditional clay pots (Meenchatti) for authentic flavor.";
+
+    const displayTitle = title ? `${title} | ${siteTitle}` : `Farmers Meenchatti | Authentic Kerala Seafood`;
+    const displayDescription = description || defaultDescription;
 
     // Structured Data (JSON-LD) for a Restaurant/Food Business
     const structuredData = {
@@ -27,7 +30,7 @@ const SEO: React.FC<SEOProps> = ({
         "image": [
             image
         ],
-        "description": description,
+        "description": displayDescription,
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "Kottayam Coastal Hwy",
@@ -66,24 +69,24 @@ const SEO: React.FC<SEOProps> = ({
     return (
         <Helmet>
             {/* Standard Metadata */}
-            <title>{fullTitle}</title>
-            <meta name="description" content={description} />
+            <title>{displayTitle}</title>
+            <meta name="description" content={displayDescription} />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <link rel="canonical" href={url} />
 
             {/* Open Graph / Facebook */}
             <meta property="og:type" content={type} />
             <meta property="og:url" content={url} />
-            <meta property="og:title" content={fullTitle} />
-            <meta property="og:description" content={description} />
+            <meta property="og:title" content={displayTitle} />
+            <meta property="og:description" content={displayDescription} />
             <meta property="og:image" content={image} />
             <meta property="og:site_name" content={siteTitle} />
 
             {/* Twitter */}
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:url" content={url} />
-            <meta name="twitter:title" content={fullTitle} />
-            <meta name="twitter:description" content={description} />
+            <meta name="twitter:title" content={displayTitle} />
+            <meta name="twitter:description" content={displayDescription} />
             <meta name="twitter:image" content={image} />
 
             {/* Structured Data */}
