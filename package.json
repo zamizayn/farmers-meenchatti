@@ -1,0 +1,32 @@
+{
+  "name": "farmers-meenchatti-modern",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "seed": "node scripts/seed-manual.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.35.0",
+    "clsx": "^2.1.1",
+    "firebase": "^12.7.0",
+    "framer-motion": "^12.26.1",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-helmet-async": "^2.0.5",
+    "react-router-dom": "^7.12.0",
+    "tailwind-merge": "^3.4.0",
+    "@dnd-kit/core": "6.1.0",
+    "@dnd-kit/utilities": "3.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

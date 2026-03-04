@@ -1,0 +1,8 @@
+{
+  "name": "Farmers Meenchatti Modern",
+  "description": "A premium, modern web experience for traditional Kerala clay-pot fish curry brand, featuring animated transitions, interactive menu, and a Gemini-powered recipe & pairing assistant.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

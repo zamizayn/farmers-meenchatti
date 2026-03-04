@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://farmersmeenchatti.com/sitemap.xml
