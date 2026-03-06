@@ -40,8 +40,6 @@ const Footer: React.FC = () => {
             <ul className="space-y-4 text-sm text-slate-500">
               <li><a href="#" className="hover:text-sky-700 transition-colors">Our Story</a></li>
               <li><a href="#" className="hover:text-sky-700 transition-colors">Menu</a></li>
-              <li><a href="#" className="hover:text-sky-700 transition-colors">Sustainability</a></li>
-              <li><a href="#" className="hover:text-sky-700 transition-colors">Careers</a></li>
             </ul>
           </div>
 
@@ -49,15 +47,12 @@ const Footer: React.FC = () => {
             <h4 className="font-bold text-slate-900 mb-6 uppercase text-xs tracking-widest">Support</h4>
             <ul className="space-y-4 text-sm text-slate-500">
               <li><a href="#" className="hover:text-sky-700 transition-colors">Contact Us</a></li>
-              <li><a href="#" className="hover:text-sky-700 transition-colors">Shipping Policy</a></li>
-              <li><a href="#" className="hover:text-sky-700 transition-colors">Return Policy</a></li>
-              <li><a href="#" className="hover:text-sky-700 transition-colors">Wholesale</a></li>
+
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold text-slate-900 mb-6 uppercase text-xs tracking-widest">Newsletter</h4>
-            <p className="text-sm text-slate-500 mb-4">Subscribe to get spicy updates and recipes.</p>
+
             <div className="flex">
               <input
                 type="email"

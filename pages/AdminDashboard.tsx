@@ -19,7 +19,8 @@ import {
     Tag,
     Youtube, // Added icon for Video Reviews
     Share2,
-    ShoppingBag
+    ShoppingBag,
+    Globe
 } from 'lucide-react';
 import AdminMenu from '../components/AdminMenu';
 import AdminCategories from '../components/AdminCategories';
@@ -27,6 +28,7 @@ import AdminTableMap from '../components/AdminTableMap';
 import AdminVideoReviews from '../components/AdminVideoReviews';
 import AdminUserReviews from '../components/AdminUserReviews';
 import AdminSettings from '../components/AdminSettings';
+import AdminPages from '../components/AdminPages';
 import Toast from '../components/Toast';
 import { playNotificationSound, requestNotificationPermission, sendNotification } from '../utils/notifications';
 
@@ -50,7 +52,7 @@ const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'pending' | 'confirmed' | 'all'>('pending');
     const [sidebarOpen, setSidebarOpen] = useState(true);
     // View state now includes 'categories' and 'videos'
-    const [currentView, setCurrentView] = useState<'reservations' | 'menu' | 'categories' | 'videos' | 'reviews' | 'tables' | 'settings'>('reservations');
+    const [currentView, setCurrentView] = useState<'reservations' | 'menu' | 'categories' | 'videos' | 'reviews' | 'tables' | 'settings' | 'pages'>('reservations');
 
     // Notification State
     const [toast, setToast] = useState({ show: false, title: '', message: '' });
@@ -230,6 +232,15 @@ _Sent via Farmers Admin Panel_`;
                     </button> */}
 
                     <button
+                        onClick={() => setCurrentView('pages')}
+                        className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl font-medium transition-colors ${currentView === 'pages' ? 'bg-sky-600/20 text-sky-400' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                            }`}
+                    >
+                        <Globe size={20} />
+                        SEO Pages
+                    </button>
+
+                    <button
                         onClick={() => setCurrentView('settings')}
                         className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl font-medium transition-colors ${currentView === 'settings' ? 'bg-sky-600/20 text-sky-400' : 'text-slate-400 hover:text-white hover:bg-slate-800'
                             }`}
@@ -273,6 +284,8 @@ _Sent via Farmers Admin Panel_`;
                     <AdminTableMap />
                 ) : currentView === 'settings' ? (
                     <AdminSettings />
+                ) : currentView === 'pages' ? (
+                    <AdminPages />
                 ) : (
                     <>
                         {/* Header */}

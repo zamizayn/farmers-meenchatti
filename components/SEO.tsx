@@ -1,9 +1,11 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSettings } from '../context/SettingsContext';
 
 interface SEOProps {
     title?: string;
     description?: string;
+    keywords?: string;
     image?: string;
     url?: string;
     type?: string;
@@ -12,15 +14,17 @@ interface SEOProps {
 const SEO: React.FC<SEOProps> = ({
     title,
     description,
+    keywords,
     image = "https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=1200",
     url = "https://farmersmeenchatti.com",
     type = "website"
 }) => {
+    const { settings } = useSettings();
     const siteTitle = "Farmers Meenchatti";
-    const defaultDescription = "Experience the soul of Kerala seafood with Farmers Meenchatti. Wild-caught fish curries cooked in traditional clay pots (Meenchatti) for authentic flavor.";
 
-    const displayTitle = title ? `${title} | ${siteTitle}` : `Farmers Meenchatti | Authentic Kerala Seafood`;
-    const displayDescription = description || defaultDescription;
+    const displayTitle = title ? `${title} | ${siteTitle}` : (settings.seoTitle || "Farmers Meenchatti | Authentic Kerala Seafood");
+    const displayDescription = description || settings.seoDescription || "Experience the soul of Kerala seafood with Farmers Meenchatti. Wild-caught fish curries cooked in traditional clay pots (Meenchatti) for authentic flavor.";
+    const displayKeywords = keywords || settings.seoKeywords;
 
     // Structured Data (JSON-LD) for a Restaurant/Food Business
     const structuredData = {
@@ -71,6 +75,7 @@ const SEO: React.FC<SEOProps> = ({
             {/* Standard Metadata */}
             <title>{displayTitle}</title>
             <meta name="description" content={displayDescription} />
+            {displayKeywords && <meta name="keywords" content={displayKeywords} />}
             <meta name="viewport" content="width=device-width, initial-scale=1" />
             <link rel="canonical" href={url} />
 

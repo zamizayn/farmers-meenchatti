@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meenchatti-v1';
+const CACHE_NAME = 'meenchatti-v2';
 const urlsToCache = [
     '/',
     '/index.html',

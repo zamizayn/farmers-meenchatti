@@ -20,7 +20,10 @@ const AdminSettings: React.FC = () => {
         liveCatchActive: false,
         liveCatchText: '',
         logoUrl: '',
-        menuImageUrl: ''
+        menuImageUrl: '',
+        seoTitle: '',
+        seoDescription: '',
+        seoKeywords: ''
     });
 
     useEffect(() => {
@@ -41,7 +44,10 @@ const AdminSettings: React.FC = () => {
                         liveCatchActive: data.liveCatchActive || false,
                         liveCatchText: data.liveCatchText || '',
                         logoUrl: data.logoUrl || 'https://www.farmersmeenchatti.in/img/logo-sm.jpg',
-                        menuImageUrl: data.menuImageUrl || ''
+                        menuImageUrl: data.menuImageUrl || '',
+                        seoTitle: data.seoTitle || '',
+                        seoDescription: data.seoDescription || '',
+                        seoKeywords: data.seoKeywords || ''
                     });
                 } else {
                     // Initialize default if not exists
@@ -115,7 +121,10 @@ const AdminSettings: React.FC = () => {
                 liveCatchActive: settings.liveCatchActive,
                 liveCatchText: settings.liveCatchText,
                 logoUrl: settings.logoUrl,
-                menuImageUrl: settings.menuImageUrl
+                menuImageUrl: settings.menuImageUrl,
+                seoTitle: settings.seoTitle,
+                seoDescription: settings.seoDescription,
+                seoKeywords: settings.seoKeywords
             });
             alert('Settings saved!');
         } catch (error) {
@@ -221,6 +230,42 @@ const AdminSettings: React.FC = () => {
                             className="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all"
                             placeholder="Enter description..."
                         />
+                    </div>
+
+                    <div className="space-y-4 pt-4 border-t border-slate-100">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Global SEO Settings</label>
+                        <div className="space-y-4">
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">Default Browser Title</label>
+                                <input
+                                    value={settings.seoTitle}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, seoTitle: e.target.value }))}
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all"
+                                    placeholder="e.g. Farmers Meenchatti | Best Fish Curry in Kottayam"
+                                />
+                                <p className="text-[10px] text-slate-400">Used when a page doesn't have a specific title.</p>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">Default Meta Description</label>
+                                <textarea
+                                    rows={2}
+                                    value={settings.seoDescription}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, seoDescription: e.target.value }))}
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all text-sm"
+                                    placeholder="Describe your brand for search engines..."
+                                />
+                                <p className="text-[10px] text-slate-400">Target 150-160 characters for best Google results.</p>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase">SEO Keywords (Comma separated)</label>
+                                <input
+                                    value={settings.seoKeywords}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, seoKeywords: e.target.value }))}
+                                    className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:border-sky-500 focus:bg-white outline-none transition-all"
+                                    placeholder="fish curry, kerala seafood, kottayam restaurants..."
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <div className="space-y-4 pt-4 border-t border-slate-100">

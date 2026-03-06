@@ -7,6 +7,7 @@ import Home from './pages/Home';
 // Lazy load admin pages to reduce initial bundle size
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const DynamicPage = lazy(() => import('./pages/DynamicPage'));
 
 // Loading component
 const PageLoader = () => (
@@ -26,6 +27,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/p/:slug" element={<DynamicPage />} />
           {/* Redirect /admin to /admin/login */}
           <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
         </Routes>
