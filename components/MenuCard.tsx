@@ -9,9 +9,10 @@ import { isProductAvailable } from '../utils/timeUtils';
 interface MenuCardProps {
   isOpen: boolean;
   onClose: () => void;
+  initialCategory?: string;
 }
 
-const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
+const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose, initialCategory }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState<{ product: Product, quantity: number }[]>([]);
@@ -50,7 +51,11 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   const categories = useMemo(() => {
-    const grouped = products.reduce((acc, item) => {
+    const productsToDisplay = initialCategory 
+        ? products.filter(p => p.category?.toLowerCase() === initialCategory.toLowerCase()) 
+        : products;
+
+    const grouped = productsToDisplay.reduce((acc, item) => {
       // Capitalize first letter of category for display key if needed, or just use as is
       const cat = item.category || 'Other';
       if (!acc[cat]) acc[cat] = [];
@@ -61,7 +66,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
     // Convert to array and sort categories if needed (e.g. customized order)
     // For now, Object.entries is sufficient, maybe sorting keys alphabetically or predefined order
     return Object.entries(grouped).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [products]);
+  }, [products, initialCategory]);
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -114,7 +119,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
       />
 
       {/* Menu Modal */}
-      <div className="relative w-full max-w-6xl h-full max-h-[90vh] bg-[#f0f9ff] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+      <div className="relative w-full max-w-6xl h-full max-h-[90vh] bg-[#FDF9E3] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
 
         {/* Header */}
         <div className="p-8 md:p-8 border-b border-sky-100 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
@@ -158,7 +163,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose }) => {
           ) : (
             categories.map(([category, items]) => (
               <div key={category} className="space-y-8 animate-in slide-in-from-bottom-4 duration-700">
-                <div className="flex items-center gap-6 sticky top-0 bg-[#f0f9ff]/95 backdrop-blur py-4 z-10 border-b border-sky-100/50">
+                <div className="flex items-center gap-6 sticky top-0 bg-[#FDF9E3]/95 backdrop-blur py-4 z-10 border-b border-sky-100/50">
                   <h3 className="text-2xl font-serif font-bold text-slate-900 capitalize italic flex items-center gap-3">
                     {category === 'curry' && '🥘'}
                     {category === 'claypot' && '🏺'}

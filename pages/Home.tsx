@@ -22,7 +22,13 @@ import SplashScreen from '../components/SplashScreen';
 
 const Home: React.FC = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [menuInitialCategory, setMenuInitialCategory] = useState<string | undefined>(undefined);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
+    const openMenuWithCategory = (category?: string) => {
+        setMenuInitialCategory(category);
+        setIsMenuOpen(true);
+    };
     const [showSplash, setShowSplash] = useState(true);
     const [timings, setTimings] = useState({
         openingTime: '11:00 AM',
@@ -67,22 +73,22 @@ const Home: React.FC = () => {
                 title={seoData.tagline?.replace(/\\n/g, ' ')}
                 description={seoData.subTagline}
             />
-            <Navbar onMenuClick={() => setIsMenuOpen(true)} />
+            <Navbar onMenuClick={() => openMenuWithCategory()} />
 
             <main>
                 {/* Section 1: Hero */}
-                <Hero onMenuClick={() => setIsMenuOpen(true)} />
+                <Hero onMenuClick={() => openMenuWithCategory('fish')} />
 
                 {/* Section 2: Signature Highlights */}
                 <SignatureHighlights
-                    onItemClick={() => setIsMenuOpen(true)}
+                    onItemClick={() => openMenuWithCategory()}
                 />
 
                 {/* Section 3: Process Journey */}
                 <Process />
 
                 {/* Section 4: Our Story */}
-                <section id="story" className="py-24 bg-[#f0f9ff] relative">
+                <section id="story" className="py-24 bg-[#FDF9E3] relative">
                     <div className="container mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
                         <div className="order-2 md:order-1 relative">
                             <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border-[10px] border-white">
@@ -125,7 +131,7 @@ const Home: React.FC = () => {
                 </section>
 
                 {/* Section 5: Menu Grid (Interactive) */}
-                <Menu onExploreClick={() => setIsMenuOpen(true)} />
+                <Menu onExploreClick={() => openMenuWithCategory()} />
 
                 {/* Section 6: Reviews (Text) */}
                 <Reviews />
@@ -199,7 +205,7 @@ const Home: React.FC = () => {
                 </section>
             </main>
 
-            <MenuCard isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+            <MenuCard isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} initialCategory={menuInitialCategory} />
             <MenuImageModal isOpen={isImageModalOpen} onClose={() => setIsImageModalOpen(false)} />
             <Footer />
 
@@ -214,7 +220,7 @@ const Home: React.FC = () => {
         }
         html {
           scrollbar-width: thin;
-          scrollbar-color: #0369a1 #f0f9ff;
+          scrollbar-color: #0369a1 #FDF9E3;
         }
       `}</style>
         </div>

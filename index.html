@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="theme-color" content="#082f49" />
+    <meta name="theme-color" content="#420606" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="https://www.farmersmeenchatti.in/img/logo-sm.jpg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,6 +33,29 @@
         content="Experience the soul of Kerala seafood with Farmers Meenchatti. Wild-caught fish curries cooked in traditional clay pots.">
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=1200">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sky: {
+                            50: '#FDF9E7',
+                            100: '#FBEFB5',
+                            200: '#F8E084',
+                            300: '#E8B131',
+                            400: '#D18E20',
+                            500: '#C04C28',
+                            600: '#941B1B',
+                            700: '#7A1313',
+                            800: '#5E0C0C',
+                            900: '#420606',
+                            950: '#260202',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -49,23 +72,54 @@
         }
 
         .primary-gradient {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            background: linear-gradient(135deg, #941B1B 0%, #5E0C0C 100%);
         }
 
         .meenchatti-glow {
-            filter: drop-shadow(0 0 20px rgba(14, 165, 233, 0.3));
+            filter: drop-shadow(0 0 20px rgba(148, 27, 27, 0.3));
         }
     </style>
 </head>
 
-<body class="bg-[#f0f9ff] text-slate-900 overflow-x-hidden">
+<body class="bg-[#FDF9E3] text-slate-900 overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js');
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    reg.onupdatefound = () => {
+                        const installingWorker = reg.installing;
+                        installingWorker.onstatechange = () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New content is available, force reload
+                                window.location.reload();
+                            }
+                        };
+                    };
+                });
             });
+
+            // Ensure we use the latest service worker controller
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    window.location.reload();
+                    refreshing = true;
+                }
+            });
+        }
+
+        // Check for force clear parameter
+        if (window.location.search.includes('clear_cache=true')) {
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    for (let name of names) caches.delete(name);
+                });
+            }
+            // Strip the param and reload
+            const newUrl = window.location.origin + window.location.pathname;
+            window.location.replace(newUrl);
         }
     </script>
 </body>

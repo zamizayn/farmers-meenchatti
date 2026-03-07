@@ -11,7 +11,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
         // Start fade out after 2.5 seconds
         const timer = setTimeout(() => {
             setIsVisible(false);
-            // Call onComplete after transition finishes (e.g., 500ms transition)
+            // Call onComplete after transition finishes
             setTimeout(onComplete, 500);
         }, 2500);
 
@@ -20,28 +20,27 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
 
     return (
         <div
-            className={`fixed inset-0 z-[100] bg-sky-950 flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            className={`fixed inset-0 z-[100] bg-[#FDF9E3] flex flex-col items-center justify-center transition-opacity duration-1000 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
                 }`}
         >
             <div className="relative">
                 <div className="text-center space-y-4">
-                    {/* Logo / Icon Animation */}
-                    <div className="mx-auto w-24 h-24 relative mb-6">
-                        <div className="absolute inset-0 bg-sky-500 rounded-full blur-[40px] opacity-20 animate-pulse"></div>
-                        <svg className="w-full h-full text-sky-100 animate-[float_3s_ease-in-out_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 009-9c0-4.97-4.03-9-9-9s-9 4.03-9 9 0 009 9z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 11V7" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 17v-2" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 13c0 2.21-1.79 4-4 4s-4-1.79-4-4" />
-                        </svg>
+                    {/* Logo Image Animation */}
+                    <div className="mx-auto w-32 h-32 relative mb-8">
+                        <div className="absolute inset-0 bg-[#941B1B] rounded-full blur-[40px] opacity-20 animate-pulse"></div>
+                        <img
+                            src="/logo-sm.jpg"
+                            alt="Farmers Meenchatti"
+                            className="w-full h-full object-contain rounded-full shadow-lg border-2 border-white animate-[float_3s_ease-in-out_infinite]"
+                        />
                     </div>
 
-                    <h1 className="text-4xl md:text-5xl font-serif font-bold text-white tracking-wide animate-[fadeInUp_0.8s_ease-out_forwards] opacity-0 translate-y-4">
+                    <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#941B1B] tracking-wide animate-[fadeInUp_0.8s_ease-out_forwards] opacity-0 translate-y-4">
                         Farmers Meenchatti
                     </h1>
-                    <div className="h-px w-24 bg-sky-600 mx-auto animate-[widthGrow_1s_ease-out_1s_forwards] w-0"></div>
-                    <p className="text-sky-300 text-sm tracking-[0.3em] uppercase animate-[fadeInUp_0.8s_ease-out_0.5s_forwards] opacity-0 translate-y-4">
-                        The Soul of Kerala
+                    <div className="h-0.5 w-24 bg-[#D18E20] mx-auto animate-[widthGrow_1s_ease-out_1s_forwards] w-0"></div>
+                    <p className="text-[#941B1B]/80 text-sm font-bold tracking-[0.3em] uppercase animate-[fadeInUp_0.8s_ease-out_0.5s_forwards] opacity-0 translate-y-4">
+                        Authentic Kerala Flavors
                     </p>
                 </div>
             </div>
@@ -60,6 +59,10 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete }) => {
             opacity: 1;
             transform: translateY(0);
           }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
         }
       `}</style>
         </div>

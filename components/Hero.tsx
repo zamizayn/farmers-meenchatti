@@ -36,13 +36,13 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#f0f9ff]">
-      {/* Dynamic Background Elements - Light Blue Tones */}
-      <div className="absolute top-20 right-[-5%] w-[600px] h-[600px] bg-sky-200/40 rounded-full blur-[120px] -z-10 animate-pulse" />
-      <div className="absolute bottom-20 left-[-5%] w-[500px] h-[500px] bg-blue-100/60 rounded-full blur-[100px] -z-10 animate-bounce [animation-duration:12s]" />
+    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#FDF9E3]">
+      {/* Dynamic Background Elements - Warm Tones */}
+      <div className="absolute top-20 right-[-5%] w-[600px] h-[600px] bg-[#941B1B]/10 rounded-full blur-[120px] -z-10 animate-pulse" />
+      <div className="absolute bottom-20 left-[-5%] w-[500px] h-[500px] bg-[#D18E20]/10 rounded-full blur-[100px] -z-10 animate-bounce [animation-duration:12s]" />
 
       {/* Animated Wave Divider */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-sky-50 to-transparent pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#FDF9E3] to-transparent pointer-events-none"></div>
 
       <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
         <div className="space-y-8 relative z-10">
@@ -58,10 +58,10 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
             {(language === 'en' && tagline ? tagline : t('hero_tagline')).split('\n').map((line, i) => (
               <React.Fragment key={i}>
                 {i === 1 ? (
-                  <span className="text-sky-600 italic relative block mt-2">
+                  <span className="text-[#941B1B] italic relative block mt-2">
                     {line}
                     <svg className="absolute -bottom-4 left-0 w-full max-w-[400px]" viewBox="0 0 300 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M5 15C50 5 250 5 295 15" stroke="#0284c7" strokeWidth="4" strokeLinecap="round" strokeDasharray="10 5" />
+                      <path d="M5 15C50 5 250 5 295 15" stroke="#941B1B" strokeWidth="4" strokeLinecap="round" strokeDasharray="10 5" />
                     </svg>
                   </span>
                 ) : (
@@ -78,7 +78,7 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
           <div className="flex flex-wrap gap-5 items-center">
             <button
               onClick={onMenuClick}
-              className="group bg-sky-600 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-sky-700 transition-all shadow-2xl shadow-sky-600/30 flex items-center gap-4"
+              className="group bg-[#941B1B] text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-[#7A1313] transition-all shadow-2xl shadow-[#941B1B]/30 flex items-center gap-4"
             >
               {t('hero_cta')}
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
@@ -86,12 +86,12 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
 
           </div>
 
-          <div className="flex items-center gap-8 pt-10 border-t border-sky-200/60">
+          <div className="flex items-center gap-8 pt-10 border-t border-[#941B1B]/20">
             <div>
               <p className="text-3xl font-serif font-bold text-slate-900">100%</p>
               <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Wild Caught</p>
             </div>
-            <div className="w-px h-10 bg-sky-200"></div>
+            <div className="w-px h-10 bg-[#941B1B]/20"></div>
             <div>
               <p className="text-3xl font-serif font-bold text-slate-900">7 Day</p>
               <div className="flex items-center gap-1">
@@ -99,7 +99,7 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
                 <img src="https://cdn-icons-png.flaticon.com/128/785/785116.png" alt="Fire" className="w-4 h-4 opacity-80" />
               </div>
             </div>
-            <div className="w-px h-10 bg-sky-200"></div>
+            <div className="w-px h-10 bg-[#941B1B]/20"></div>
             <div>
               <p className="text-3xl font-serif font-bold text-slate-900">4.9/5</p>
               <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Fresh Rating</p>
@@ -109,22 +109,22 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
 
         <div className="relative lg:h-[700px] flex items-center justify-center">
           <div className="relative z-10 w-full max-w-[550px] animate-[float_6s_infinite_ease-in-out]">
-            <div className="absolute inset-0 bg-sky-400 rounded-full blur-[80px] opacity-20 -z-10 scale-90"></div>
+            <div className="absolute inset-0 bg-[#D18E20] rounded-full blur-[80px] opacity-20 -z-10 scale-90"></div>
             <img
               src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1000&auto=format&fit=crop"
-              className="rounded-full w-full aspect-square object-cover border-[12px] border-white shadow-2xl meenchatti-glow ring-1 ring-sky-100"
+              className="rounded-full w-full aspect-square object-cover border-[12px] border-white shadow-2xl meenchatti-glow ring-1 ring-[#FDF9E3]"
               alt="Authentic Meenchatti Fish Curry"
             />
 
             {/* Floating Seafood Badges */}
-            <div className="absolute -top-4 right-10 bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-xl border border-sky-50 animate-bounce">
+            <div className="absolute -top-4 right-10 bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl shadow-xl border border-[#FDF9E3] animate-bounce">
               <p className="text-slate-900 font-bold flex items-center gap-2">
-                <span className="text-sky-600">🦐</span> Coastal Fresh
+                <span className="text-[#941B1B]">🦐</span> Coastal Fresh
               </p>
             </div>
-            <div className="absolute bottom-20 -left-10 bg-sky-600 text-white px-6 py-3 rounded-2xl shadow-xl border border-white/10 animate-[pulse_4s_infinite]">
+            <div className="absolute bottom-20 -left-10 bg-[#941B1B] text-white px-6 py-3 rounded-2xl shadow-xl border border-white/10 animate-[pulse_4s_infinite]">
               <p className="font-bold flex items-center gap-2">
-                <span className="text-sky-300">🍲</span> Clay Infused
+                <span className="text-[#D18E20]">🍲</span> Clay Infused
               </p>
             </div>
           </div>
@@ -134,7 +134,7 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
       {/* Scroll Indicator */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50">
         <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">Dive In</span>
-        <div className="w-px h-12 bg-gradient-to-b from-sky-400 to-transparent"></div>
+        <div className="w-px h-12 bg-gradient-to-b from-[#941B1B] to-transparent"></div>
       </div>
 
       <style>{`

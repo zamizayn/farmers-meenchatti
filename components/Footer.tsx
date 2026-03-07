@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
   }, []);
 
   return (
-    <footer className="bg-slate-50 py-20 border-t border-slate-200">
+    <footer className="bg-[#FDF9E3] py-20 border-t border-stone-200">
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1 space-y-6">
@@ -38,8 +38,8 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="font-bold text-slate-900 mb-6 uppercase text-xs tracking-widest">Navigation</h4>
             <ul className="space-y-4 text-sm text-slate-500">
-              <li><a href="#" className="hover:text-sky-700 transition-colors">Our Story</a></li>
-              <li><a href="#" className="hover:text-sky-700 transition-colors">Menu</a></li>
+              <li><a href="#" className="hover:text-[#941B1B] transition-colors">Our Story</a></li>
+              <li><a href="#" className="hover:text-[#941B1B] transition-colors">Menu</a></li>
             </ul>
           </div>
 
@@ -57,9 +57,9 @@ const Footer: React.FC = () => {
               <input
                 type="email"
                 placeholder="Email address"
-                className="bg-white border border-slate-200 px-4 py-2 rounded-l-lg focus:outline-none focus:border-sky-700 flex-1"
+                className="bg-white border border-slate-200 px-4 py-2 rounded-l-lg focus:outline-none focus:border-[#941B1B] flex-1"
               />
-              <button className="bg-sky-700 text-white px-4 py-2 rounded-r-lg hover:bg-sky-800 transition-colors">
+              <button className="bg-[#941B1B] text-white px-4 py-2 rounded-r-lg hover:bg-[#7a1616] transition-colors">
                 Join
               </button>
             </div>
@@ -69,9 +69,9 @@ const Footer: React.FC = () => {
         <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-xs">
           <p>© 2024 Farmers Meenchatti. Handcrafted with love in Kerala.</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-sky-700 transition-colors">Instagram</a>
-            <a href="#" className="hover:text-sky-700 transition-colors">Facebook</a>
-            <a href="#" className="hover:text-sky-700 transition-colors">YouTube</a>
+            <a href="#" className="hover:text-[#941B1B] transition-colors">Instagram</a>
+            <a href="#" className="hover:text-[#941B1B] transition-colors">Facebook</a>
+            <a href="#" className="hover:text-[#941B1B] transition-colors">YouTube</a>
           </div>
         </div>
       </div>

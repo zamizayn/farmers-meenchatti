@@ -27,7 +27,7 @@ const AdminLogin: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#f0f9ff] flex items-center justify-center p-6">
+        <div className="min-h-screen bg-[#FDF9E3] flex items-center justify-center p-6">
             <div className="bg-white p-10 rounded-[2rem] shadow-2xl max-w-md w-full">
                 <h1 className="text-3xl font-serif font-bold text-slate-900 mb-2 text-center">Admin Access</h1>
                 <p className="text-slate-500 text-center mb-8">Please login to manage reservations</p>
