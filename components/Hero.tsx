@@ -122,11 +122,7 @@ const Hero: React.FC<HeroProps> = ({ onMenuClick }) => {
                 <span className="text-[#941B1B]">🦐</span> Coastal Fresh
               </p>
             </div>
-            <div className="absolute bottom-20 -left-10 bg-[#941B1B] text-white px-6 py-3 rounded-2xl shadow-xl border border-white/10 animate-[pulse_4s_infinite]">
-              <p className="font-bold flex items-center gap-2">
-                <span className="text-[#D18E20]">🍲</span> Clay Infused
-              </p>
-            </div>
+
           </div>
         </div>
       </div>

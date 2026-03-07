@@ -4,7 +4,7 @@ export const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-15460699
 
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Our Story', href: '#story' },
-  { label: 'Menu', href: '#menu' },
+  { label: 'Menu', href: '/menu' },
   { label: 'Process', href: '#process' },
   { label: 'Reviews', href: '#reviews' },
   { label: 'Contact', href: '#contact' }

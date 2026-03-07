@@ -110,7 +110,40 @@
             });
         }
 
-        // Check for force clear parameter
+        // Automatic Version Reset (Forces fresh load for the new Cinematic Menu)
+        const SITE_VERSION = '2026.03.07.2050'; // New version signal
+        try {
+            const storedVersion = localStorage.getItem('site_version');
+            if (storedVersion !== SITE_VERSION) {
+                // 1. Clear all Caches
+                if ('caches' in window) {
+                    caches.keys().then(names => {
+                        return Promise.all(names.map(name => caches.delete(name)));
+                    }).then(() => {
+                        // 2. Unregister all Service Workers
+                        if ('serviceWorker' in navigator) {
+                            navigator.serviceWorker.getRegistrations().then(registrations => {
+                                for (let registration of registrations) {
+                                    registration.unregister();
+                                }
+                                localStorage.setItem('site_version', SITE_VERSION);
+                                window.location.reload(true); // Force reload from server
+                            });
+                        } else {
+                            localStorage.setItem('site_version', SITE_VERSION);
+                            window.location.reload(true);
+                        }
+                    });
+                } else {
+                    localStorage.setItem('site_version', SITE_VERSION);
+                    window.location.reload(true);
+                }
+            }
+        } catch (e) {
+            console.error('Update check failed', e);
+        }
+
+        // Keep the manual check as a backup
         if (window.location.search.includes('clear_cache=true')) {
             if ('caches' in window) {
                 caches.keys().then(names => {

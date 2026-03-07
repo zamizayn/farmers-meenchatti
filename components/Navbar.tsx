@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useLanguage } from '../context/LanguageContext';
 import { Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -35,14 +36,16 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     setIsMobileMenuOpen(false); // Close mobile menu when a link is clicked
-    if (href === '#menu') {
-      e.preventDefault();
-      onMenuClick();
+    if (href === '/menu') {
+      return; // Let standard navigation take over
+    }
+    if (href.startsWith('#')) {
+      // Logic for anchor links if needed
     }
   };
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-4' : 'bg-transparent py-6'
+    <nav className={`sticky top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-md py-4' : 'bg-transparent py-6'
       }`}>
       <div className="container mx-auto px-6 flex justify-between items-center">
         <a href="#" className="flex items-center gap-3 group">
@@ -71,12 +74,12 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
           ))}
 
 
-          <button
-            onClick={onMenuClick}
+          <Link
+            to="/menu"
             className="bg-[#941B1B] text-white px-6 py-2.5 rounded-full hover:bg-[#7a1616] transition-all shadow-lg hover:shadow-[#941B1B]/20 active:scale-95"
           >
             Order Now
-          </button>
+          </Link>
         </div>
 
         <button 
@@ -109,15 +112,13 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick }) => {
                 {t(`nav_${item.label.toLowerCase().replace(' ', '_')}`)}
               </a>
             ))}
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                onMenuClick();
-              }}
+            <Link
+              to="/menu"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="bg-[#941B1B] text-white px-6 py-4 rounded-xl hover:bg-[#7a1616] transition-all font-bold mt-8 shadow-lg w-full text-center text-lg shadow-[#941B1B]/20 active:scale-95"
             >
               Order Now
-            </button>
+            </Link>
           </div>
         </div>
       )}

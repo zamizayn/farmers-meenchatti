@@ -8,6 +8,7 @@ import Home from './pages/Home';
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const DynamicPage = lazy(() => import('./pages/DynamicPage'));
+const MenuPage = lazy(() => import('./pages/MenuPage'));
 
 // Loading component
 const PageLoader = () => (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/menu" element={<MenuPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/p/:slug" element={<DynamicPage />} />

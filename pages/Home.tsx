@@ -137,7 +137,7 @@ const Home: React.FC = () => {
                 <Reviews />
 
                 {/* Section 7: Video Reviews (Grid) */}
-                <VideoReviews />
+                {/* <VideoReviews /> */}
 
                 {/* Section 8: Health Benefits */}
                 <HealthBenefits />

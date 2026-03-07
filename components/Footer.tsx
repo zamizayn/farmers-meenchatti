@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
+import { MessageCircle } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState('https://www.farmersmeenchatti.in/img/logo-sm.jpg');
@@ -70,8 +71,16 @@ const Footer: React.FC = () => {
           <p>© 2024 Farmers Meenchatti. Handcrafted with love in Kerala.</p>
           <div className="flex gap-6">
             <a href="#" className="hover:text-[#941B1B] transition-colors">Instagram</a>
-            <a href="#" className="hover:text-[#941B1B] transition-colors">Facebook</a>
-            <a href="#" className="hover:text-[#941B1B] transition-colors">YouTube</a>
+            <a
+              href="https://wa.me/919778702863"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 hover:text-[#25D366] transition-colors"
+            >
+              <MessageCircle size={14} />
+              WhatsApp
+            </a>
+
           </div>
         </div>
       </div>

@@ -122,7 +122,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose, initialCategory })
       <div className="relative w-full max-w-6xl h-full max-h-[90vh] bg-[#FDF9E3] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
 
         {/* Header */}
-        <div className="p-8 md:p-8 border-b border-sky-100 flex justify-between items-center bg-white sticky top-0 z-10 shrink-0">
+        <div className="p-8 md:p-8 border-b border-sky-100 flex justify-between items-center bg-white relative z-20 shrink-0">
           <div className="space-y-1">
             <h2 className="text-3xl md:text-5xl font-serif font-bold text-slate-900">Grand Menu</h2>
             <p className="text-sky-600 font-bold uppercase tracking-[0.2em] text-xs">Farmers Meenchatti Heritage</p>
@@ -163,7 +163,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose, initialCategory })
           ) : (
             categories.map(([category, items]) => (
               <div key={category} className="space-y-8 animate-in slide-in-from-bottom-4 duration-700">
-                <div className="flex items-center gap-6 sticky top-0 bg-[#FDF9E3]/95 backdrop-blur py-4 z-10 border-b border-sky-100/50">
+                <div className="flex items-center gap-6 bg-[#FDF9E3] py-4 border-b border-sky-100/50">
                   <h3 className="text-2xl font-serif font-bold text-slate-900 capitalize italic flex items-center gap-3">
                     {category === 'curry' && '🥘'}
                     {category === 'claypot' && '🏺'}
