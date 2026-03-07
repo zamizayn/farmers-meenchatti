@@ -1,5 +1,6 @@
-
 import { Product, NavItem } from './types';
+
+export const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop';
 
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Our Story', href: '#story' },

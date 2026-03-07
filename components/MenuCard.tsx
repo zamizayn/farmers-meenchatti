@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { db } from '../firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { Product } from '../types';
-import { PRODUCTS } from '../constants'; // Fallback
+import { PRODUCTS, DEFAULT_PRODUCT_IMAGE } from '../constants'; // Fallback
 import { X, ShoppingBasket, Plus, Minus, Send } from 'lucide-react';
 import { isProductAvailable } from '../utils/timeUtils';
 
@@ -179,7 +179,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose, initialCategory })
                   {items.map((item) => (
                     <div key={item.id} className="group flex gap-5 items-start bg-white p-4 rounded-3xl shadow-sm border border-slate-100/50 hover:shadow-md hover:border-sky-100 transition-all duration-300">
                       <div className="w-28 h-28 rounded-2xl overflow-hidden flex-shrink-0 shadow-md relative">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
+                        <img src={item.image || DEFAULT_PRODUCT_IMAGE} alt={item.name} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
                         <div className="absolute top-2 left-2">
                           <div className={`w-5 h-5 rounded-md flex items-center justify-center bg-white/90 backdrop-blur shadow-sm border ${item.type === 'veg' ? 'border-green-200' : 'border-red-200'}`}>
                             <div className={`w-2.5 h-2.5 rounded-full ${item.type === 'veg' ? 'bg-green-500' : 'bg-red-500'}`}></div>
@@ -274,7 +274,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ isOpen, onClose, initialCategory })
                   cart.map((item) => (
                     <div key={item.product.id} className="flex gap-4 items-center">
                       <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
-                        <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                        <img src={item.product.image || DEFAULT_PRODUCT_IMAGE} alt={item.product.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-slate-900 text-sm truncate">{item.product.name}</h4>

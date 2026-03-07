@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
 import { collection, query, limit, getDocs } from 'firebase/firestore';
 import { Product } from '../types';
-import { PRODUCTS } from '../constants'; // Fallback
+import { PRODUCTS, DEFAULT_PRODUCT_IMAGE } from '../constants'; // Fallback
 import { isProductAvailable } from '../utils/timeUtils';
 
 interface MenuProps {
@@ -81,7 +81,7 @@ const Menu: React.FC<MenuProps> = ({ onExploreClick }) => {
               >
                 <div className="relative aspect-[4/5] rounded-3xl overflow-hidden mb-6 shadow-sm border border-slate-100">
                   <img
-                    src={product.image}
+                    src={product.image || DEFAULT_PRODUCT_IMAGE}
                     alt={product.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />

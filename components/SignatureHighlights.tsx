@@ -7,6 +7,7 @@ import { db } from '../firebase';
 import { collection, query, where, limit, getDocs } from 'firebase/firestore';
 import { useLanguage } from '../context/LanguageContext';
 import { isProductAvailable } from '../utils/timeUtils';
+import { DEFAULT_PRODUCT_IMAGE } from '../constants';
 
 const DEFAULT_HIGHLIGHTS = [
 
@@ -68,7 +69,7 @@ const SignatureHighlights: React.FC<SignatureHighlightsProps> = ({ onItemClick }
             >
               <div className="aspect-[4/5] overflow-hidden rounded-[2.5rem] mb-8 relative">
                 <img
-                  src={item.image}
+                  src={item.image || DEFAULT_PRODUCT_IMAGE}
                   alt={item.name}
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
